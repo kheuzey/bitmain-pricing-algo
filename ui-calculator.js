@@ -27,6 +27,9 @@ function calculatePrice() {
         return;
     }
     
+    // Update the historical prices table for selected miner
+    updateHistoricalPricesTable(minerKey);
+    
     // Try simple pricing first (guaranteed historical data)
     let price = null;
     let method = 'Unknown';
@@ -241,6 +244,111 @@ function updatePriceChart(minerKey, selectedDate, currentPrice) {
                 }
             }
         }
+    });
+}
+
+function updateHistoricalPricesTable(minerKey) {
+    const minerName = MINER_SPECS[minerKey]?.name || 'Unknown Miner';
+    document.getElementById('selected-miner-name').textContent = minerName;
+    
+    const tbody = document.getElementById('historical-prices-tbody');
+    tbody.innerHTML = ''; // Clear existing rows
+    
+    // Define key historical data points for each miner
+    const historicalData = {
+        's9_135': [
+            { date: 'Nov 28, 2017', price: '$1,515', btc: '$9,900', context: 'Early bull market rally' },
+            { date: 'Dec 8, 2017', price: '$1,520', btc: '$15,000', context: 'Mid bull market' },
+            { date: 'Dec 20, 2017', price: '$4,500', btc: '$19,000', context: 'Peak bubble - 3x in 12 days!' },
+            { date: 'Jan 3, 2018', price: '$2,830', btc: '$15,000', context: 'Post-peak correction' },
+            { date: 'Feb 9, 2018', price: '$2,420', btc: '$8,200', context: 'Market crash' },
+            { date: 'Dec 2018', price: '$650', btc: '$3,200', context: 'Bear market floor' }
+        ],
+        's9_14': [
+            { date: 'Nov 28, 2017', price: '$1,515', btc: '$9,900', context: 'Early bull market' },
+            { date: 'Dec 20, 2017', price: '$4,500', btc: '$19,000', context: 'Peak bubble' },
+            { date: 'Jan 3, 2018', price: '$2,830', btc: '$15,000', context: 'Correction phase' },
+            { date: 'Dec 2018', price: '$650', btc: '$3,200', context: 'Bear market floor' }
+        ],
+        's9i_135': [
+            { date: 'June 2017', price: '$2,250', btc: '$2,500', context: 'Launch price' },
+            { date: 'Dec 2017', price: '$4,400', btc: '$19,000', context: 'Peak bubble' },
+            { date: 'May 2018', price: '$1,350', btc: '$8,500', context: 'Mid-bear market' },
+            { date: 'Dec 2018', price: '$650', btc: '$3,200', context: 'Bear market floor' }
+        ],
+        's9i_14': [
+            { date: 'May 2018', price: '$1,450', btc: '$8,500', context: 'Launch during bear' },
+            { date: 'Dec 2018', price: '$650', btc: '$3,200', context: 'Bear market floor' },
+            { date: 'June 2019', price: '$820', btc: '$9,000', context: 'Recovery phase' }
+        ],
+        's9j': [
+            { date: 'Dec 2017', price: '$4,300', btc: '$19,000', context: 'Launch at peak' },
+            { date: 'Jan 2018', price: '$3,000', btc: '$14,000', context: 'Quick correction' },
+            { date: 'May 2018', price: '$1,300', btc: '$8,500', context: 'Bear market' },
+            { date: 'Dec 2018', price: '$650', btc: '$3,200', context: 'Bear market floor' }
+        ],
+        't9plus': [
+            { date: 'Jan 2017', price: '$1,100', btc: '$1,000', context: 'Early 2017' },
+            { date: 'Dec 2017', price: '$3,800', btc: '$19,000', context: 'Peak bubble' },
+            { date: 'Dec 2018', price: '$650', btc: '$3,200', context: 'Bear market floor' }
+        ],
+        's17': [
+            { date: 'Apr 2019', price: '$2,500', btc: '$5,200', context: 'Launch price' },
+            { date: 'July 2019', price: '$2,800', btc: '$12,000', context: 'Summer rally' },
+            { date: 'Mar 2020', price: '$1,500', btc: '$5,000', context: 'COVID crash' },
+            { date: 'Apr 2021', price: '$5,500', btc: '$60,000', context: 'Bull market peak' }
+        ],
+        's17pro': [
+            { date: 'Apr 2019', price: '$2,400', btc: '$5,200', context: 'Launch price' },
+            { date: 'Mar 2020', price: '$1,450', btc: '$5,000', context: 'COVID crash' },
+            { date: 'Apr 2021', price: '$5,300', btc: '$60,000', context: 'Bull market peak' }
+        ],
+        's19': [
+            { date: 'May 2020', price: '$2,400', btc: '$9,000', context: 'Launch price' },
+            { date: 'Dec 2020', price: '$4,500', btc: '$20,000', context: 'Bull run begins' },
+            { date: 'Apr 2021', price: '$11,000', btc: '$60,000', context: 'Bull market peak' },
+            { date: 'Nov 2021', price: '$12,000', btc: '$69,000', context: 'ATH period' },
+            { date: 'June 2022', price: '$4,500', btc: '$20,000', context: 'Bear market' },
+            { date: 'Nov 2022', price: '$3,000', btc: '$16,000', context: 'FTX crash - floor' }
+        ],
+        's19pro': [
+            { date: 'June 2020', price: '$2,600', btc: '$9,500', context: 'Launch price' },
+            { date: 'Apr 2021', price: '$11,500', btc: '$60,000', context: 'Bull market peak' },
+            { date: 'Nov 2021', price: '$12,500', btc: '$69,000', context: 'ATH period' },
+            { date: 'Nov 2022', price: '$2,100', btc: '$16,000', context: 'FTX crash - floor' }
+        ],
+        's19xp': [
+            { date: 'July 2022', price: '$8,000', btc: '$22,000', context: 'Launch in bear' },
+            { date: 'Nov 2022', price: '$5,000', btc: '$16,000', context: 'FTX crash' },
+            { date: 'Jan 2024', price: '$4,500', btc: '$42,000', context: 'ETF approval rally' },
+            { date: 'Mar 2024', price: '$5,600', btc: '$70,000', context: 'New ATH period' }
+        ]
+    };
+    
+    // Get data for selected miner or show generic message
+    const minerData = historicalData[minerKey] || [];
+    
+    if (minerData.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="4" style="text-align: center; padding: 20px; color: #666;">
+                    Historical price data will be displayed here when available for ${minerName}
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    // Populate table with miner-specific data
+    minerData.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.date}</td>
+            <td class="price-value">${row.price}</td>
+            <td>${row.btc}</td>
+            <td><small>${row.context}</small></td>
+        `;
+        tbody.appendChild(tr);
     });
 }
 
