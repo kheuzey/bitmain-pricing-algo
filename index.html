@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitmain ASIC Miner Pricing Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Bitmain ASIC Miner Pricing Calculator</h1>
+            <p class="subtitle">Historical pricing algorithm based on guaranteed market data</p>
+        </header>
+
+        <!-- Key Insights -->
+        <div class="insights-bar">
+            <div class="insight-card">
+                <span class="insight-label">Peak Bubble (Dec 2017)</span>
+                <span class="insight-value">S9: $4,500</span>
+            </div>
+            <div class="insight-card">
+                <span class="insight-label">Bear Market Floor</span>
+                <span class="insight-value">S9: $650 minimum</span>
+            </div>
+            <div class="insight-card">
+                <span class="insight-label">FOMO Multiplier</span>
+                <span class="insight-value">Can 3x in 12 days</span>
+            </div>
+            <div class="insight-card">
+                <span class="insight-label">Sticky Prices</span>
+                <span class="insight-value">Miners decline slower than BTC</span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Input Section -->
+            <div class="input-section">
+                <h2>⚙️ Calculate Miner Price</h2>
+                
+                <div class="input-grid">
+                    <div class="input-group">
+                        <label for="miner-select">Select Miner Model</label>
+                        <select id="miner-select">
+                            <option value="">-- Select a miner --</option>
+                            <optgroup label="Antminer S9 Series">
+                                <option value="s9_135">S9 13.5 TH/s</option>
+                                <option value="s9_14">S9 14 TH/s</option>
+                                <option value="s9i_135">S9i 13.5 TH/s</option>
+                                <option value="s9i_14">S9i 14 TH/s</option>
+                                <option value="s9j">S9j 14.5 TH/s</option>
+                            </optgroup>
+                            <optgroup label="T9 Series">
+                                <option value="t9plus">T9+ 10.5 TH/s</option>
+                            </optgroup>
+                            <optgroup label="Antminer S17 Series">
+                                <option value="s17">S17 56 TH/s</option>
+                                <option value="s17pro">S17 Pro 53 TH/s</option>
+                            </optgroup>
+                            <optgroup label="Antminer S19 Series">
+                                <option value="s19">S19 95 TH/s</option>
+                                <option value="s19pro">S19 Pro 110 TH/s</option>
+                                <option value="s19xp">S19 XP 140 TH/s</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="date-select">Select Date</label>
+                        <input type="date" id="date-select" min="2016-06-01" max="2024-12-31" value="2017-12-20">
+                        <span class="input-hint">Price as of this date</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="btc-price-input">BTC Price (USD)</label>
+                        <input type="number" id="btc-price-input" value="19000" step="100">
+                        <span class="input-hint">Bitcoin price on selected date</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="btc-30d-ago">BTC Price 30 Days Ago</label>
+                        <input type="number" id="btc-30d-ago" value="10000" step="100">
+                        <span class="input-hint">For momentum calculation</span>
+                    </div>
+                </div>
+
+                <button class="calculate-btn" onclick="calculatePrice()">
+                    Calculate Miner Price
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div class="results-section" id="results" style="display: none;">
+                <h2>📊 Pricing Analysis</h2>
+
+                <!-- Price Result Cards -->
+                <div class="summary-cards">
+                    <div class="summary-card">
+                        <h3>Calculated Price</h3>
+                        <div class="big-number" id="calculated-price">$0</div>
+                        <div class="sub-stats">
+                            <span>Method: <strong id="price-method">--</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <h3>Market Phase</h3>
+                        <div class="big-number phase-indicator" id="market-phase">--</div>
+                        <div class="sub-stats">
+                            <span>BTC Momentum: <strong id="btc-momentum">0%</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="summary-card">
+                        <h3>Price Multiplier</h3>
+                        <div class="big-number" id="price-multiplier">1.0x</div>
+                        <div class="sub-stats">
+                            <span>Base: <strong id="base-price">$0</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historical Comparison -->
+                <div class="comparison-section">
+                    <h3>📈 Historical Price Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Guaranteed Prices Table -->
+                <div class="guaranteed-prices">
+                    <h3>✅ Guaranteed Historical Prices (S9)</h3>
+                    <table class="price-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>S9 Price</th>
+                                <th>BTC Price</th>
+                                <th>BTC Change</th>
+                                <th>Market Phase</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nov 28, 2017</td>
+                                <td class="price-value">$1,515</td>
+                                <td>$9,900</td>
+                                <td class="positive">+40%</td>
+                                <td><span class="phase-badge bull">Early Bull</span></td>
+                            </tr>
+                            <tr>
+                                <td>Dec 8, 2017</td>
+                                <td class="price-value">$1,520</td>
+                                <td>$15,000</td>
+                                <td class="positive">+50%</td>
+                                <td><span class="phase-badge bull">Mid Bull</span></td>
+                            </tr>
+                            <tr>
+                                <td>Dec 20, 2017</td>
+                                <td class="price-value">$4,500</td>
+                                <td>$19,000</td>
+                                <td class="positive">+27%</td>
+                                <td><span class="phase-badge bubble">Peak Bubble</span></td>
+                            </tr>
+                            <tr>
+                                <td>Jan 3, 2018</td>
+                                <td class="price-value">$2,830</td>
+                                <td>$15,000</td>
+                                <td class="negative">-21%</td>
+                                <td><span class="phase-badge correction">Correction</span></td>
+                            </tr>
+                            <tr>
+                                <td>Feb 9, 2018</td>
+                                <td class="price-value">$2,420</td>
+                                <td>$8,200</td>
+                                <td class="negative">-40%</td>
+                                <td><span class="phase-badge bear">Crash</span></td>
+                            </tr>
+                            <tr>
+                                <td>Mar 1, 2018</td>
+                                <td class="price-value">$2,825</td>
+                                <td>$10,900</td>
+                                <td class="positive">+33%</td>
+                                <td><span class="phase-badge recovery">Relief Rally</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pricing Insights -->
+                <div class="insights-section">
+                    <h3>💡 Key Pricing Insights</h3>
+                    <div class="insights-grid">
+                        <div class="insight-box">
+                            <h4>🚀 Extreme Bubble Behavior</h4>
+                            <p>Dec 8-20, 2017: S9 price TRIPLED from $1,520 to $4,500 in just 12 days while BTC only rose 27%</p>
+                        </div>
+                        <div class="insight-box">
+                            <h4>📉 Sticky Prices in Decline</h4>
+                            <p>February 2018: BTC at $8,200 (-57% from peak) but S9 still at $2,420 (-46% from peak)</p>
+                        </div>
+                        <div class="insight-box">
+                            <h4>🔄 Counter-Trend Movements</h4>
+                            <p>March 2018: S9 ROSE to $2,825 (+17%) even though trend was still bearish</p>
+                        </div>
+                        <div class="insight-box">
+                            <h4>🛡️ Price Floors</h4>
+                            <p>S9 never dropped below $650 even in worst bear market due to manufacturing cost + hardware value</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Based on guaranteed historical price data from Bitmain official sales records</p>
+            <p>Algorithm calibrated with actual market prices during 2017-2018 bubble and crash</p>
+        </footer>
+    </div>
+
+    <!-- Include pricing scripts -->
+    <script src="simple-miner-pricing.js"></script>
+    <script src="bitmain-dynamic-pricing-calculator.js"></script>
+    <script src="analyze-price-patterns.js"></script>
+    <script src="ui-calculator.js"></script>
+</body>
+</html>
