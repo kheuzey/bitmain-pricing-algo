@@ -1,0 +1,37 @@
+{
+  "name": "bitmain-pricing-algo",
+  "version": "1.0.0",
+  "description": "Historical Bitmain ASIC miner pricing algorithm and analysis tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js",
+    "demo": "node demo.js"
+  },
+  "keywords": [
+    "bitcoin",
+    "mining",
+    "bitmain",
+    "asic",
+    "pricing",
+    "cryptocurrency",
+    "antminer",
+    "S9",
+    "S17",
+    "S19",
+    "market-analysis"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/bitmain-pricing-algo.git"
+  },
+  "files": [
+    "index.js",
+    "simple-miner-pricing.js",
+    "bitmain-dynamic-pricing-calculator.js",
+    "analyze-price-patterns.js",
+    "demo.js",
+    "README.md"
+  ]
+}
